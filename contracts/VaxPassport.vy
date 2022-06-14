@@ -12,7 +12,7 @@ struct AccessControl:
 # Struct defining vaccination data
 struct VaxPassport:
   id: uint128 # person id (CPF, RG etc.)
-  doses: DynArray[int32, 30]
+  doses: DynArray[uint32, 30]
 
 # Official institution address (e.g. OMS)
 owner: public(address)
@@ -43,3 +43,15 @@ def grant_access(allowed_addresss: address, _countryCode: String[3]):
 def revoke_access(_address: address):
   assert msg.sender == self.owner, "Only contract's owner is allowed to revoke write access"
   self.access[_address].allowed = False
+
+
+@external
+def add_dose(_address: address, _id: uint128, dose_code: uint32):
+  assert self.access[msg.sender].allowed, "You need 'write access' to be able to add dose"
+  assert (len(self.passports[_address].doses) == 0 and self.passports[_address].id == 0) \
+      or (len(self.passports[_address].doses) > 0 and self.passports[_address].id == _id), "Inconsistent passport id"
+
+  self.passports[_address].id = _id
+  self.passports[_address].doses.append(dose_code)
+
+# ------------- View methods ------------- #
