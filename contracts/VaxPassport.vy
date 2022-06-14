@@ -24,8 +24,6 @@ access: public(HashMap[address, AccessControl])
 passports: public(HashMap[address, VaxPassport])
 
 
-# ------------- Internal useful methods ------------- #
-
 # ------------- External methods ------------- #
 
 @external
@@ -34,5 +32,14 @@ def __init__():
   self.access[msg.sender].allowed = True  # grant access to contract's owner
 
 @external
-def grant_access():
+def grant_access(allowed_addresss: address, _countryCode: String[3]):
   assert msg.sender == self.owner, "Only contract's owner is allowed to grant write access"
+  self.access[allowed_addresss] = AccessControl({ 
+    allowed: True,
+    countryCode: _countryCode
+  })
+
+@external
+def revoke_access(_address: address):
+  assert msg.sender == self.owner, "Only contract's owner is allowed to revoke write access"
+  self.access[_address].allowed = False
