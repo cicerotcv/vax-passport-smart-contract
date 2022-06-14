@@ -23,7 +23,7 @@ def vaccinated_passports(accounts):
     return accounts[4:6]
 
 @pytest.fixture(scope="session", autouse=True)
-def unvaccinated_passport(accounts):
+def unvaccinated_passports(accounts):
     return accounts[6:8]
 
 @pytest.fixture(scope="session", autouse=True)
@@ -101,3 +101,21 @@ class TestAddDose:
         # but the passport.id is wrong: 123456 != 123457
         with brownie.reverts("Inconsistent passport id"):
             vax_passport.add_dose(vaccinated_passports[0].address, 123457, 123, { 'from': granted_account } )
+
+
+class TestViewPassport:
+    @staticmethod
+    def test_view_vaccinated_passport(vax_passport, generic_account, vaccinated_passports):
+        # some generic account is trying to read the vaccination status of a
+        # vaccinated_passport
+        passport = vax_passport.view_passport(vaccinated_passports[0].address, {'from': generic_account })
+        assert passport['id'] == 123456
+        assert len(passport['doses']) > 0
+
+    @staticmethod
+    def test_view_unvaccinated_passport(vax_passport, generic_account, unvaccinated_passports):
+        # some generic account is trying to read the vaccination status of a
+        # unvaccinated_passport
+        passport = vax_passport.view_passport(unvaccinated_passports[0].address, {'from': generic_account })
+        assert passport['id'] == 0
+        assert len(passport['doses']) == 0
