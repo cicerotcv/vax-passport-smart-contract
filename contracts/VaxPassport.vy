@@ -5,7 +5,7 @@
 # ------------- Struct Definitions ------------- #
 
 # Struct defining management access
-struct WriteAccess:
+struct AccessControl:
   allowed: bool
   countryCode: String[3]  # https://www.iso.org/obp/ui/#search
 
@@ -18,7 +18,7 @@ struct VaxPassport:
 owner: public(address)
 
 # Addresses allowed to write data to contract
-access: public(HashMap[address, WriteAccess])
+access: public(HashMap[address, AccessControl])
 
 # Addresses related vaccination passports
 passports: public(HashMap[address, VaxPassport])
@@ -32,3 +32,7 @@ passports: public(HashMap[address, VaxPassport])
 def __init__():
   self.owner = msg.sender                 # define contract's owner
   self.access[msg.sender].allowed = True  # grant access to contract's owner
+
+@external
+def grant_access():
+  assert msg.sender == self.owner, "Only contract's owner is allowed to grant write access"
