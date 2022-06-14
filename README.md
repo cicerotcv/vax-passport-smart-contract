@@ -26,6 +26,10 @@ Run tests
 ```shell
 $ brownie test  -v --no-header
 ```
+If you have success, you should see something like this:
+
+![tests_output](tests_output.png)
+
 
 Obs: note that it takes time for the tests to run because it automatically starts 
 __ganache server__. It should be of no problem if you start it yourself on 

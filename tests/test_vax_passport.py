@@ -119,3 +119,25 @@ class TestViewPassport:
         passport = vax_passport.view_passport(unvaccinated_passports[0].address, {'from': generic_account })
         assert passport['id'] == 0
         assert len(passport['doses']) == 0
+
+class TestViewAccessControl:
+    @staticmethod
+    def test_view_access_control_granted(vax_passport, generic_account, granted_account):
+        # some generic account is trying to check the access control of an account with valid access
+        access_control = vax_passport.view_access_control(granted_account.address, {'from': generic_account})
+        assert access_control['allowed'] == True
+        assert access_control['countryCode'] == "BRA"
+
+    @staticmethod
+    def test_view_access_control_revoked(vax_passport, generic_account, revoked_account):
+        # some generic account is trying to check the access control of an account with revoked access
+        access_control = vax_passport.view_access_control(revoked_account.address, {'from': generic_account})
+        assert access_control['allowed'] == False
+        assert access_control['countryCode'] == "ALB"
+
+    @staticmethod
+    def test_view_access_control_generic(vax_passport, generic_account):
+        # some generic account is trying to check the access control of a generic account
+        access_control = vax_passport.view_access_control(generic_account.address, {'from': generic_account})
+        assert access_control['allowed'] == False
+        assert access_control['countryCode'] == ""

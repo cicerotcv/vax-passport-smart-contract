@@ -60,3 +60,8 @@ def add_dose(_address: address, _id: uint128, dose_code: uint32):
 @external
 def view_passport(_address: address) -> VaxPassport:
   return self.passports[_address]
+
+@view
+@external
+def view_access_control(_address: address) -> AccessControl:
+  return self.access[_address]
